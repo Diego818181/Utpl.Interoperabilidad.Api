@@ -22,10 +22,10 @@ sp = spotipy.Spotify(auth_manager=spotipy.oauth2.SpotifyClientCredentials(
 description = """
 Utpl tnteroperabilidad API ayuda a describir las capacidades de un directorio. 🚀
 
-## Personas
+## empresas
 
-Tu puedes crear una persona.
-Tu puedes listar personas.
+Tu puedes crear una empresa.
+Tu puedes listar empresas.
 
 
 ## Artistas
@@ -37,8 +37,8 @@ You will be able to:
 
 tags_metadata = [
     {
-        "name":"personas",
-        "description": "Permite realizar un crud completo de una persona (listar)"
+        "name":"empresas",
+        "description": "Permite realizar un crud completo de una empresa (listar)"
     },
     {
         "name":"artistas",
@@ -52,9 +52,9 @@ app = FastAPI(
     version="0.0.1",
     terms_of_service="http://example.com/terms/",
     contact={
-        "name": "Felipe Quiñonez",
+        "name": "Diego Sarmiento",
         "url": "http://x-force.example.com/contact/",
-        "email": "fdquinones@utpl.edu.ec",
+        "email": "dfsarmiento@utpl.edu.ec",
     },
     license_info={
         "name": "Apache 2.0",
@@ -69,68 +69,68 @@ security = HTTPBasic()
 #configuracion de mongo
 cliente = pymongo.MongoClient("mongodb+srv://utplinteroperabilidad:0b1Fd3PFZZInSuZK@cluster0.susnphb.mongodb.net/?retryWrites=true&w=majority")
 database = cliente["directorio"]
-coleccion = database["persona"]
+coleccion = database["empresa"]
 
-class PersonaRepositorio (BaseModel):
+class empresaRepositorio (BaseModel):
     id: str
     nombre: str
-    edad: int
+    ciudad: str
     identificacion: Optional[str] = None
     ciudad: Optional[str] = None
 
-class PersonaEntrada (BaseModel):
+class empresaEntrada (BaseModel):
     nombre:str
-    edad:int
+    ciudad:str
     ciudad: Optional[str] = None
 
-class PersonaEntradaV2 (BaseModel):
+class empresaEntradaV2 (BaseModel):
     nombre:str
-    edad:int
+    ciudad:str
     identificacion:str
     ciudad: Optional[str] = None
 
 
-personaList = []
+empresaList = []
 
-@app.post("/personas", response_model=PersonaRepositorio, tags = ["personas"])
+@app.post("/empresas", response_model=empresaRepositorio, tags = ["empresas"])
 @version(1, 0)
-async def crear_persona(personE: PersonaEntrada):
-    itemPersona = PersonaRepositorio (id= str(uuid.uuid4()), nombre = personE.nombre, edad = personE.edad, ciudad = personE.ciudad)
-    resultadoDB =  coleccion.insert_one(itemPersona.dict())
-    return itemPersona
+async def crear_empresa(empresaE: empresaEntrada):
+    itemempresa = empresaRepositorio (id= str(uuid.uuid4()), nombre = empresaE.nombre, ciudad = empresaE.ciudad, ciudad = empresaE.ciudad)
+    resultadoDB =  coleccion.insert_one(itemempresa.dict())
+    return itemempresa
 
-@app.post("/personas", response_model=PersonaRepositorio, tags = ["personas"])
+@app.post("/empresas", response_model=empresaRepositorio, tags = ["empresas"])
 @version(2, 0)
-async def crear_personav2(personE: PersonaEntradaV2):
-    itemPersona = PersonaRepositorio (id= str(uuid.uuid4()), nombre = personE.nombre, edad = personE.edad, ciudad = personE.ciudad, identificacion = personE.identificacion)
-    resultadoDB =  coleccion.insert_one(itemPersona.dict())
-    return itemPersona
+async def crear_empresav2(empresaE: empresaEntradaV2):
+    itemempresa = empresaRepositorio (id= str(uuid.uuid4()), nombre = empresaE.nombre, ciudad = empresaE.ciudad, ciudad = empresaE.ciudad, identificacion = empresaE.identificacion)
+    resultadoDB =  coleccion.insert_one(itemempresa.dict())
+    return itemempresa
 
-@app.get("/personas", response_model=List[PersonaRepositorio], tags=["personas"])
+@app.get("/empresas", response_model=List[empresaRepositorio], tags=["empresas"])
 @version(1, 0)
-def get_personas(credentials: HTTPBasicCredentials = Depends(security)):
+def get_empresas(credentials: HTTPBasicCredentials = Depends(security)):
     authenticate(credentials)
     items = list(coleccion.find())
     print (items)
     return items
 
-@app.get("/personas/{persona_id}", response_model=PersonaRepositorio , tags=["personas"])
+@app.get("/empresas/{empresa_id}", response_model=empresaRepositorio , tags=["empresas"])
 @version(1, 0)
-def obtener_persona (persona_id: str):
-    item = coleccion.find_one({"id": persona_id})
+def obtener_empresa (empresa_id: str):
+    item = coleccion.find_one({"id": empresa_id})
     if item:
         return item
     else:
-        raise HTTPException(status_code=404, detail="Persona no encontrada")
+        raise HTTPException(status_code=404, detail="empresa no encontrada")
 
-@app.delete("/personas/{persona_id}", tags=["personas"])
+@app.delete("/empresas/{empresa_id}", tags=["empresas"])
 @version(1, 0)
-def eliminar_persona (persona_id: str):
-    result = coleccion.delete_one({"id": persona_id})
+def eliminar_empresa (empresa_id: str):
+    result = coleccion.delete_one({"id": empresa_id})
     if result.deleted_count == 1:
-        return {"mensaje": "Persona eliminada exitosamente"}
+        return {"mensaje": "empresa eliminada exitosamente"}
     else:
-        raise HTTPException(status_code=404, detail="Persona no encontrada")
+        raise HTTPException(status_code=404, detail="empresa no encontrada")
 
 @app.get("/pista/{pista_id}", tags = ["artistas"])
 @version(1, 0)
