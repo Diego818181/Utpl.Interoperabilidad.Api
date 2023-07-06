@@ -22,7 +22,7 @@ sp = spotipy.Spotify(auth_manager=spotipy.oauth2.SpotifyClientCredentials(
 description = """
 Utpl tnteroperabilidad API ayuda a describir las capacidades de un directorio. 🚀
 
-## empresas
+## Empresas
 
 Tu puedes crear una empresa.
 Tu puedes listar empresas.
@@ -71,42 +71,42 @@ cliente = pymongo.MongoClient("mongodb+srv://utplinteroperabilidad:0b1Fd3PFZZInS
 database = cliente["directorio"]
 coleccion = database["empresa"]
 
-class empresaRepositorio (BaseModel):
+class EmpresaRepositorio (BaseModel):
     id: str
     nombre: str
-    ciudad: str
+    pais: str
     identificacion: Optional[str] = None
     ciudad: Optional[str] = None
 
-class empresaEntrada (BaseModel):
+class EmpresaEntrada (BaseModel):
     nombre:str
-    ciudad:str
+    pais:str
     ciudad: Optional[str] = None
 
-class empresaEntradaV2 (BaseModel):
+class EmpresaEntradaV2 (BaseModel):
     nombre:str
-    ciudad:str
+    pais:str
     identificacion:str
     ciudad: Optional[str] = None
 
 
 empresaList = []
 
-@app.post("/empresas", response_model=empresaRepositorio, tags = ["empresas"])
+@app.post("/empresas", response_model=EmpresaRepositorio, tags = ["empresas"])
 @version(1, 0)
-async def crear_empresa(empresaE: empresaEntrada):
-    itemempresa = empresaRepositorio (id= str(uuid.uuid4()), nombre = empresaE.nombre, ciudad = empresaE.ciudad, ciudad = empresaE.ciudad)
-    resultadoDB =  coleccion.insert_one(itemempresa.dict())
-    return itemempresa
+async def crear_empresa(empE: EmpresaEntrada):
+    itemEmpresa = EmpresaRepositorio (id= str(uuid.uuid4()), nombre = empE.nombre, pais = empE.pais, ciudad = empE.ciudad)
+    resultadoDB =  coleccion.insert_one(itemEmpresa.dict())
+    return itemEmpresa
 
-@app.post("/empresas", response_model=empresaRepositorio, tags = ["empresas"])
+@app.post("/empresas", response_model=EmpresaRepositorio, tags = ["empresas"])
 @version(2, 0)
-async def crear_empresav2(empresaE: empresaEntradaV2):
-    itemempresa = empresaRepositorio (id= str(uuid.uuid4()), nombre = empresaE.nombre, ciudad = empresaE.ciudad, ciudad = empresaE.ciudad, identificacion = empresaE.identificacion)
-    resultadoDB =  coleccion.insert_one(itemempresa.dict())
-    return itemempresa
+async def crear_empresav2(empE: EmpresaEntradaV2):
+    itemEmpresa = EmpresaRepositorio (id= str(uuid.uuid4()), nombre = empE.nombre, pais = empE.pais, ciudad = empE.ciudad, identificacion = empE.identificacion)
+    resultadoDB =  coleccion.insert_one(itemEmpresa.dict())
+    return itemEmpresa
 
-@app.get("/empresas", response_model=List[empresaRepositorio], tags=["empresas"])
+@app.get("/empresas", response_model=List[EmpresaRepositorio], tags=["empresas"])
 @version(1, 0)
 def get_empresas(credentials: HTTPBasicCredentials = Depends(security)):
     authenticate(credentials)
@@ -114,23 +114,23 @@ def get_empresas(credentials: HTTPBasicCredentials = Depends(security)):
     print (items)
     return items
 
-@app.get("/empresas/{empresa_id}", response_model=empresaRepositorio , tags=["empresas"])
+@app.get("/empresas/{empresa_id}", response_model=EmpresaRepositorio , tags=["empresas"])
 @version(1, 0)
 def obtener_empresa (empresa_id: str):
     item = coleccion.find_one({"id": empresa_id})
     if item:
         return item
     else:
-        raise HTTPException(status_code=404, detail="empresa no encontrada")
+        raise HTTPException(status_code=404, detail="Empresa no encontrada")
 
 @app.delete("/empresas/{empresa_id}", tags=["empresas"])
 @version(1, 0)
 def eliminar_empresa (empresa_id: str):
     result = coleccion.delete_one({"id": empresa_id})
     if result.deleted_count == 1:
-        return {"mensaje": "empresa eliminada exitosamente"}
+        return {"mensaje": "Empresa eliminada exitosamente"}
     else:
-        raise HTTPException(status_code=404, detail="empresa no encontrada")
+        raise HTTPException(status_code=404, detail="Empresa no encontrada")
 
 @app.get("/pista/{pista_id}", tags = ["artistas"])
 @version(1, 0)
@@ -147,6 +147,6 @@ async def get_artista(artista_id: str):
 
 @app.get("/")
 def read_root():
-    return {"Hello": "Interoperabilidad 8"}
+    return {"Hello": "Interoperabilidad 1"}
 
 app = VersionedFastAPI(app)
