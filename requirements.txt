@@ -3,3 +3,5 @@ uvicorn==0.22.0
 spotipy==2.22.1
 pymongo==4.4.0
 fastapi-versioning==0.10.0
+PyYAML==6.0.1
+starlette==0.31.0
