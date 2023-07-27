@@ -1,4 +1,4 @@
-fastapi==0.95.2
+fastapi==0.100.1
 uvicorn==0.22.0
 spotipy==2.22.1
 pymongo==4.4.0
