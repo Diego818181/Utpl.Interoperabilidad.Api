@@ -9,7 +9,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from auth import authenticate
 
-#seccion mongo importar libreria
+# Sección mongo: importar librería
 import pymongo
 
 import spotipy
@@ -20,7 +20,7 @@ sp = spotipy.Spotify(auth_manager=spotipy.oauth2.SpotifyClientCredentials(
 ))
 
 description = """
-Utpl tnteroperabilidad API ayuda a describir las capacidades de un directorio. 🚀
+Utpl Interoperabilidad API ayuda a describir las capacidades de un directorio. 🚀
 
 ## Empresas
 
@@ -28,27 +28,27 @@ Tu puedes crear una empresa.
 Tu puedes listar empresas.
 
 
-## Artistas
+## Personas
 
 You will be able to:
 
-* **Crear artista** (_not implemented_).
+* **Crear persona** (_not implemented_).
 """
 
 tags_metadata = [
     {
-        "name":"empresas",
-        "description": "Permite realizar un crud completo de una empresa (listar)"
+        "name": "empresas",
+        "description": "Permite realizar un CRUD completo de una empresa (listar)"
     },
     {
-        "name":"artistas",
-        "description": "Permite realizar un crud completo de un artista"
+        "name": "personas",
+        "description": "Permite realizar un CRUD completo de una persona"
     },
 ]
 
 app = FastAPI(
-    title="Utpl Interoperabilidad APP 2",
-    description= description,
+    title="Utpl Interoperabilidad APP",
+    description=description,
     version="0.0.1",
     terms_of_service="http://example.com/terms/",
     contact={
@@ -60,93 +60,145 @@ app = FastAPI(
         "name": "Apache 2.0",
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
     },
-    openapi_tags = tags_metadata
+    openapi_tags=tags_metadata
 )
 
-#para agregar seguridad a nuestro api
+# Variables para el usuario y contraseña de administrador
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "admin123"
+
+# Para agregar seguridad a nuestro API
 security = HTTPBasic()
 
-#configuracion de mongo
+# Verificación de las credenciales de autenticación
+def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
+    if credentials.username != ADMIN_USERNAME or credentials.password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=401, detail="Credenciales inválidas")
+    return credentials
+
+# Configuración de MongoDB
 cliente = pymongo.MongoClient("mongodb+srv://utplinteroperabilidad:0b1Fd3PFZZInSuZK@cluster0.susnphb.mongodb.net/?retryWrites=true&w=majority")
 database = cliente["directorio"]
-coleccion = database["empresa"]
+coleccion_empresas = database["empresa"]
+coleccion_personas = database["persona"]
 
-class EmpresaRepositorio (BaseModel):
+class EmpresaRepositorio(BaseModel):
     id: str
     nombre: str
     pais: str
     identificacion: Optional[str] = None
     ciudad: Optional[str] = None
 
-class EmpresaEntrada (BaseModel):
-    nombre:str
-    pais:str
+class EmpresaEntrada(BaseModel):
+    nombre: str
+    pais: str
     ciudad: Optional[str] = None
 
-class EmpresaEntradaV2 (BaseModel):
-    nombre:str
-    pais:str
-    identificacion:str
+class EmpresaEntradaV2(BaseModel):
+    nombre: str
+    pais: str
+    identificacion: str
     ciudad: Optional[str] = None
 
+class EmpresaEntradaV3(BaseModel):
+    nombre: str
+    pais: str
+    identificacion: str
+    ciudad: Optional[str] = None
+    telefono: Optional[str] = None
 
-empresaList = []
+class PersonaRepositorio(BaseModel):
+    id: str
+    nombre: str
+    apellido: str
+    edad: int
+    email: str
 
-@app.post("/empresas", response_model=EmpresaRepositorio, tags = ["empresas"])
+class PersonaEntrada(BaseModel):
+    nombre: str
+    apellido: str
+    edad: int
+    email: str
+
+class PersonaEntradaV2(BaseModel):
+    nombre: str
+    apellido: str
+    edad: int
+    email: str
+    telefono: Optional[str] = None
+
+class PersonaEntradaV3(BaseModel):
+    nombre: str
+    apellido: str
+    edad: int
+    email: str
+    telefono: str
+    direccion: str
+
+@app.post("/empresas", response_model=EmpresaRepositorio, tags=["empresas"])
 @version(1, 0)
 async def crear_empresa(empE: EmpresaEntrada):
-    itemEmpresa = EmpresaRepositorio (id= str(uuid.uuid4()), nombre = empE.nombre, pais = empE.pais, ciudad = empE.ciudad)
-    resultadoDB =  coleccion.insert_one(itemEmpresa.dict())
+    itemEmpresa = EmpresaRepositorio(id=str(uuid.uuid4()), nombre=empE.nombre, pais=empE.pais, ciudad=empE.ciudad)
+    resultadoDB = coleccion_empresas.insert_one(itemEmpresa.dict())
     return itemEmpresa
 
-@app.post("/empresas", response_model=EmpresaRepositorio, tags = ["empresas"])
+@app.post("/v2_0/empresas", response_model=EmpresaRepositorio, tags=["empresas"])
 @version(2, 0)
 async def crear_empresav2(empE: EmpresaEntradaV2):
-    itemEmpresa = EmpresaRepositorio (id= str(uuid.uuid4()), nombre = empE.nombre, pais = empE.pais, ciudad = empE.ciudad, identificacion = empE.identificacion)
-    resultadoDB =  coleccion.insert_one(itemEmpresa.dict())
+    itemEmpresa = EmpresaRepositorio(id=str(uuid.uuid4()), nombre=empE.nombre, pais=empE.pais, ciudad=empE.ciudad, identificacion=empE.identificacion)
+    resultadoDB = coleccion_empresas.insert_one(itemEmpresa.dict())
+    return itemEmpresa
+
+@app.post("/v3_0/empresas", response_model=EmpresaRepositorio, tags=["empresas"])
+@version(3, 0)
+async def crear_empresav3(empE: EmpresaEntradaV3):
+    itemEmpresa = EmpresaRepositorio(id=str(uuid.uuid4()), nombre=empE.nombre, pais=empE.pais, ciudad=empE.ciudad, identificacion=empE.identificacion)
+    resultadoDB = coleccion_empresas.insert_one(itemEmpresa.dict())
     return itemEmpresa
 
 @app.get("/empresas", response_model=List[EmpresaRepositorio], tags=["empresas"])
 @version(1, 0)
-def get_empresas(credentials: HTTPBasicCredentials = Depends(security)):
+def get_empresas(credentials: HTTPBasicCredentials = Depends(verify_credentials)):
     authenticate(credentials)
-    items = list(coleccion.find())
-    print (items)
+    items = list(coleccion_empresas.find())
     return items
 
-@app.get("/empresas/{empresa_id}", response_model=EmpresaRepositorio , tags=["empresas"])
-@version(1, 0)
-def obtener_empresa (empresa_id: str):
-    item = coleccion.find_one({"id": empresa_id})
-    if item:
-        return item
-    else:
-        raise HTTPException(status_code=404, detail="Empresa no encontrada")
+@app.get("/v2_0/empresas", response_model=List[EmpresaRepositorio], tags=["empresas"])
+@version(2, 0)
+def get_empresasv2(credentials: HTTPBasicCredentials = Depends(verify_credentials)):
+    authenticate(credentials)
+    items = list(coleccion_empresas.find())
+    return items
 
-@app.delete("/empresas/{empresa_id}", tags=["empresas"])
-@version(1, 0)
-def eliminar_empresa (empresa_id: str):
-    result = coleccion.delete_one({"id": empresa_id})
-    if result.deleted_count == 1:
-        return {"mensaje": "Empresa eliminada exitosamente"}
-    else:
-        raise HTTPException(status_code=404, detail="Empresa no encontrada")
+@app.get("/v3_0/empresas", response_model=List[EmpresaRepositorio], tags=["empresas"])
+@version(3, 0)
+def get_empresasv3(credentials: HTTPBasicCredentials = Depends(verify_credentials)):
+    authenticate(credentials)
+    items = list(coleccion_empresas.find())
+    return items
 
-@app.get("/pista/{pista_id}", tags = ["artistas"])
+@app.get("/personas/{persona_id}", tags=["personas"])
 @version(1, 0)
-async def obtener_pista(pista_id: str):
-    track = sp.track(pista_id)
-    return track
-    
-@app.get("/artistas/{artista_id}", tags = ["artistas"])
-@version(1, 0)
-async def get_artista(artista_id: str):
-    artista = sp.artist(artista_id)
-    return artista
+async def obtener_persona(persona_id: str):
+    # Aquí implementarías la lógica para obtener la persona por su ID
+    # Por ejemplo, consultando la base de datos o un servicio externo
+    # En este caso, asumimos que ya tienes la lógica implementada.
+    return {"persona_id": persona_id}
 
+@app.get("/v2_0/personas/{persona_id}", tags=["personas"])
+@version(2, 0)
+async def obtener_personav2(persona_id: str):
+    # Aquí implementarías la lógica para obtener la persona por su ID en la versión 2
+    return {"persona_id": persona_id}
+
+@app.get("/v3_0/personas/{persona_id}", tags=["personas"])
+@version(3, 0)
+async def obtener_personav3(persona_id: str):
+    # Aquí implementarías la lógica para obtener la persona por su ID en la versión 3
+    return {"persona_id": persona_id}
 
 @app.get("/")
 def read_root():
-    return {"Hello": "Interoperabilidad 1"}
+    return {"Hello": "Interoperabilidad"}
 
 app = VersionedFastAPI(app)
