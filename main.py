@@ -3,6 +3,9 @@ from pydantic import BaseModel
 from typing import List, Optional
 import uuid
 
+from fastapi.openapi.utils import get_openapi
+import yaml
+
 from fastapi_versioning import VersionedFastAPI, version
 
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -81,6 +84,49 @@ cliente = pymongo.MongoClient("mongodb+srv://utplinteroperabilidad:0b1Fd3PFZZInS
 database = cliente["directorio"]
 coleccion_empresas = database["empresa"]
 coleccion_personas = database["persona"]
+
+# Generar la definicion Swagger/OpenAPI
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="Utpl Interoperabilidad APP",
+        version="0.0.1",
+        description=description,
+        routes=app.routes,
+    )
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
+
+# Ruta para obtener la definicion Swagger en formato YAML
+@app.get("/swagger.yaml")
+async def get_swagger_yaml():
+    response = app.openapi()
+    yaml_data = yaml.dump(response)
+    return Response(content=yaml_data, media_type="text/vnd.yaml")
+
+# Ruta para la documentación interactiva de Swagger
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    response = get_swagger_ui_html(openapi_url="/swagger.yaml", title="Interoperabilidad API")
+    return response
+
+# Ruta de redireccionamiento para la documentación interactiva de Swagger
+@app.get("/docs/", include_in_schema=False)
+async def redirect_to_custom_swagger_ui():
+    return RedirectResponse("/docs")
+
+# Ruta para el favicon de Swagger UI (opcional)
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return ""
+
+# Ruta para la página de inicio de la documentación interactiva de Swagger
+@app.get("/", include_in_schema=False)
+async def redirect_to_swagger_ui():
+    return RedirectResponse("/docs")
 
 class EmpresaRepositorio(BaseModel):
     id: str
