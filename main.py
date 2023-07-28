@@ -349,19 +349,28 @@ async def obtener_persona(persona_id: str):
     # Aquí implementarías la lógica para obtener la persona por su ID
     # Por ejemplo, consultando la base de datos o un servicio externo
     # En este caso, asumimos que ya tienes la lógica implementada.
-    return {"persona_id": persona_id}
+    persona = coleccion_personas.find_one({"id": persona_id})
+    if not persona:
+        raise HTTPException(status_code=404, detail="Persona no encontrada")
+    return persona
 
 @app.get("/v2_0/personas/{persona_id}", tags=["personas"])
 @version(2, 0)
 async def obtener_personav2(persona_id: str):
     # Aquí implementarías la lógica para obtener la persona por su ID en la versión 2
-    return {"persona_id": persona_id}
+    persona = coleccion_personas.find_one({"id": persona_id})
+    if not persona:
+        raise HTTPException(status_code=404, detail="Persona no encontrada")
+    return persona
 
 @app.get("/v3_0/personas/{persona_id}", tags=["personas"])
 @version(3, 0)
 async def obtener_personav3(persona_id: str):
     # Aquí implementarías la lógica para obtener la persona por su ID en la versión 3
-    return {"persona_id": persona_id}
+    persona = coleccion_personas.find_one({"id": persona_id})
+    if not persona:
+        raise HTTPException(status_code=404, detail="Persona no encontrada")
+    return persona
 
 @app.delete("/v1_0/personas/{persona_id}", response_model=PersonaRepositorio, tags=["personas"])
 @version(1, 0)
