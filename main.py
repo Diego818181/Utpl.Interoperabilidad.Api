@@ -185,49 +185,49 @@ class PersonaEntradaV3(BaseModel):
     telefono: str
     direccion: str
 
-@app.post("/v1_0/empresas", response_model=EmpresaRepositorio, tags=["empresas"])
+@app.post("/empresas", response_model=EmpresaRepositorio, tags=["empresas"])
 @version(1, 0)
 async def crear_empresa(empE: EmpresaEntrada):
     itemEmpresa = EmpresaRepositorio(id=str(uuid.uuid4()), nombre=empE.nombre, pais=empE.pais, ciudad=empE.ciudad)
     resultadoDB = coleccion_empresas.insert_one(itemEmpresa.dict())
     return itemEmpresa
 
-@app.post("/v2_0/empresas", response_model=EmpresaRepositorio, tags=["empresas"])
+@app.post("/empresas", response_model=EmpresaRepositorio, tags=["empresas"])
 @version(2, 0)
 async def crear_empresav2(empE: EmpresaEntradaV2):
     itemEmpresa = EmpresaRepositorio(id=str(uuid.uuid4()), nombre=empE.nombre, pais=empE.pais, ciudad=empE.ciudad, identificacion=empE.identificacion)
     resultadoDB = coleccion_empresas.insert_one(itemEmpresa.dict())
     return itemEmpresa
 
-@app.post("/v3_0/empresas", response_model=EmpresaRepositorio, tags=["empresas"])
+@app.post("/empresas", response_model=EmpresaRepositorio, tags=["empresas"])
 @version(3, 0)
 async def crear_empresav3(empE: EmpresaEntradaV3):
     itemEmpresa = EmpresaRepositorio(id=str(uuid.uuid4()), nombre=empE.nombre, pais=empE.pais, ciudad=empE.ciudad, identificacion=empE.identificacion, telefono=empE.telefono)
     resultadoDB = coleccion_empresas.insert_one(itemEmpresa.dict())
     return itemEmpresa
 
-@app.get("/v1_0/empresas", response_model=List[EmpresaRepositorio], tags=["empresas"])
+@app.get("/empresas", response_model=List[EmpresaRepositorio], tags=["empresas"])
 @version(1, 0)
 def get_empresas(credentials: HTTPBasicCredentials = Depends(verify_credentials)):
     authenticate(credentials)
     items = list(coleccion_empresas.find())
     return items
 
-@app.get("/v2_0/empresas", response_model=List[EmpresaRepositorio], tags=["empresas"])
+@app.get("/empresas", response_model=List[EmpresaRepositorio], tags=["empresas"])
 @version(2, 0)
 def get_empresasv2(credentials: HTTPBasicCredentials = Depends(verify_credentials)):
     authenticate(credentials)
     items = list(coleccion_empresas.find())
     return items
 
-@app.get("/v3_0/empresas", response_model=List[EmpresaRepositorio], tags=["empresas"])
+@app.get("/empresas", response_model=List[EmpresaRepositorio], tags=["empresas"])
 @version(3, 0)
 def get_empresasv3(credentials: HTTPBasicCredentials = Depends(verify_credentials)):
     authenticate(credentials)
     items = list(coleccion_empresas.find())
     return items
 
-@app.get("/v1_0/empresas/{empresa_id}", response_model=EmpresaRepositorio, tags=["empresas"])
+@app.get("/empresas/{empresa_id}", response_model=EmpresaRepositorio, tags=["empresas"])
 @version(1, 0)
 async def obtener_empresa(empresa_id: str):
     empresa = coleccion_empresas.find_one({"id": empresa_id})
@@ -235,7 +235,7 @@ async def obtener_empresa(empresa_id: str):
         raise HTTPException(status_code=404, detail="Empresa no encontrada")
     return empresa
 
-@app.get("/v2_0/empresas/{empresa_id}", response_model=EmpresaRepositorio, tags=["empresas"])
+@app.get("/empresas/{empresa_id}", response_model=EmpresaRepositorio, tags=["empresas"])
 @version(2, 0)
 async def obtener_empresa(empresa_id: str):
     empresa = coleccion_empresas.find_one({"id": empresa_id})
@@ -243,7 +243,7 @@ async def obtener_empresa(empresa_id: str):
         raise HTTPException(status_code=404, detail="Empresa no encontrada")
     return empresa
 
-@app.get("/v3_0/empresas/{empresa_id}", response_model=EmpresaRepositorio, tags=["empresas"])
+@app.get("/empresas/{empresa_id}", response_model=EmpresaRepositorio, tags=["empresas"])
 @version(3, 0)
 async def obtener_empresa(empresa_id: str):
     empresa = coleccion_empresas.find_one({"id": empresa_id})
@@ -251,7 +251,7 @@ async def obtener_empresa(empresa_id: str):
         raise HTTPException(status_code=404, detail="Empresa no encontrada")
     return empresa
 
-@app.delete("/v1_0/empresas/{empresa_id}", response_model=EmpresaRepositorio, tags=["empresas"])
+@app.delete("/empresas/{empresa_id}", response_model=EmpresaRepositorio, tags=["empresas"])
 @version(1, 0)
 async def eliminar_empresa(empresa_id: str):
     empresa = coleccion_empresas.find_one({"id": empresa_id})
@@ -260,7 +260,7 @@ async def eliminar_empresa(empresa_id: str):
     coleccion_empresas.delete_one({"id": empresa_id})
     return empresa
 
-@app.delete("/v2_0/empresas/{empresa_id}", response_model=EmpresaRepositorio, tags=["empresas"])
+@app.delete("/empresas/{empresa_id}", response_model=EmpresaRepositorio, tags=["empresas"])
 @version(2, 0)
 async def eliminar_empresa(empresa_id: str):
     empresa = coleccion_empresas.find_one({"id": empresa_id})
@@ -269,7 +269,7 @@ async def eliminar_empresa(empresa_id: str):
     coleccion_empresas.delete_one({"id": empresa_id})
     return empresa
 
-@app.delete("/v3_0/empresas/{empresa_id}", response_model=EmpresaRepositorio, tags=["empresas"])
+@app.delete("/empresas/{empresa_id}", response_model=EmpresaRepositorio, tags=["empresas"])
 @version(3, 0)
 async def eliminar_empresa(empresa_id: str):
     empresa = coleccion_empresas.find_one({"id": empresa_id})
@@ -278,7 +278,7 @@ async def eliminar_empresa(empresa_id: str):
     coleccion_empresas.delete_one({"id": empresa_id})
     return empresa
 
-@app.post("/v1_0/personas", response_model=PersonaRepositorio, tags=["personas"])
+@app.post("/personas", response_model=PersonaRepositorio, tags=["personas"])
 @version(1, 0)
 async def crear_persona(persona: PersonaEntrada):
     itemPersona = PersonaRepositorio(
@@ -293,7 +293,7 @@ async def crear_persona(persona: PersonaEntrada):
     resultadoDB = coleccion_personas.insert_one(itemPersona.dict())
     return itemPersona
 
-@app.post("/v2_0/personas", response_model=PersonaRepositorio, tags=["personas"])
+@app.post("/personas", response_model=PersonaRepositorio, tags=["personas"])
 @version(2, 0)
 async def crear_persona_v2(persona: PersonaEntradaV2):
     itemPersona = PersonaRepositorio(
@@ -308,7 +308,7 @@ async def crear_persona_v2(persona: PersonaEntradaV2):
     resultadoDB = coleccion_personas.insert_one(itemPersona.dict())
     return itemPersona
 
-@app.post("/v3_0/personas", response_model=PersonaRepositorio, tags=["personas"])
+@app.post("/personas", response_model=PersonaRepositorio, tags=["personas"])
 @version(3, 0)
 async def crear_persona_v3(persona: PersonaEntradaV3):
     itemPersona = PersonaRepositorio(
@@ -323,28 +323,28 @@ async def crear_persona_v3(persona: PersonaEntradaV3):
     resultadoDB = coleccion_personas.insert_one(itemPersona.dict())
     return itemPersona
 
-@app.get("/v1_0/personas", response_model=List[PersonaRepositorio], tags=["personas"])
+@app.get("/personas", response_model=List[PersonaRepositorio], tags=["personas"])
 @version(1, 0)
 def get_personas(credentials: HTTPBasicCredentials = Depends(verify_credentials)):
     authenticate(credentials)
     items = list(coleccion_personas.find())
     return items
 
-@app.get("/v2_0/personas", response_model=List[PersonaRepositorio], tags=["personas"])
+@app.get("/personas", response_model=List[PersonaRepositorio], tags=["personas"])
 @version(2, 0)
 def get_personas_v2(credentials: HTTPBasicCredentials = Depends(verify_credentials)):
     authenticate(credentials)
     items = list(coleccion_personas.find())
     return items
 
-@app.get("/v3_0/personas", response_model=List[PersonaRepositorio], tags=["personas"])
+@app.get("/personas", response_model=List[PersonaRepositorio], tags=["personas"])
 @version(3, 0)
 def get_personas_v3(credentials: HTTPBasicCredentials = Depends(verify_credentials)):
     authenticate(credentials)
     items = list(coleccion_personas.find())
     return items
 
-@app.get("/v1_0/personas/{persona_id}", tags=["personas"])
+@app.get("/personas/{persona_id}", tags=["personas"])
 @version(1, 0)
 async def obtener_persona(persona_id: str):
     # Aquí implementarías la lógica para obtener la persona por su ID
@@ -355,7 +355,7 @@ async def obtener_persona(persona_id: str):
         raise HTTPException(status_code=404, detail="Persona no encontrada")
     return persona
 
-@app.get("/v2_0/personas/{persona_id}", tags=["personas"])
+@app.get("/personas/{persona_id}", tags=["personas"])
 @version(2, 0)
 async def obtener_personav2(persona_id: str):
     # Aquí implementarías la lógica para obtener la persona por su ID en la versión 2
@@ -364,7 +364,7 @@ async def obtener_personav2(persona_id: str):
         raise HTTPException(status_code=404, detail="Persona no encontrada")
     return persona
 
-@app.get("/v3_0/personas/{persona_id}", tags=["personas"])
+@app.get("/personas/{persona_id}", tags=["personas"])
 @version(3, 0)
 async def obtener_personav3(persona_id: str):
     # Aquí implementarías la lógica para obtener la persona por su ID en la versión 3
@@ -373,7 +373,7 @@ async def obtener_personav3(persona_id: str):
         raise HTTPException(status_code=404, detail="Persona no encontrada")
     return persona
 
-@app.delete("/v1_0/personas/{persona_id}", response_model=PersonaRepositorio, tags=["personas"])
+@app.delete("/personas/{persona_id}", response_model=PersonaRepositorio, tags=["personas"])
 @version(1, 0)
 async def eliminar_persona(persona_id: str):
     persona = coleccion_personas.find_one({"id": persona_id})
@@ -382,7 +382,7 @@ async def eliminar_persona(persona_id: str):
     coleccion_personas.delete_one({"id": persona_id})
     return persona
 
-@app.delete("/v2_0/personas/{persona_id}", response_model=PersonaRepositorio, tags=["personas"])
+@app.delete("/personas/{persona_id}", response_model=PersonaRepositorio, tags=["personas"])
 @version(2, 0)
 async def eliminar_persona_v2(persona_id: str):
     persona = coleccion_personas.find_one({"id": persona_id})
@@ -391,7 +391,7 @@ async def eliminar_persona_v2(persona_id: str):
     coleccion_personas.delete_one({"id": persona_id})
     return persona
 
-@app.delete("/v3_0/personas/{persona_id}", response_model=PersonaRepositorio, tags=["personas"])
+@app.delete("/personas/{persona_id}", response_model=PersonaRepositorio, tags=["personas"])
 @version(3, 0)
 async def eliminar_persona_v3(persona_id: str):
     persona = coleccion_personas.find_one({"id": persona_id})
