@@ -348,15 +348,10 @@ def get_personas_v3(credentials: HTTPBasicCredentials = Depends(verify_credentia
 @app.get("/personas/{persona_id}", tags=["personas"])
 @version(1, 0)
 async def obtener_persona(persona_id: str):
-    # Convertir el ID de cadena a ObjectId
-    persona_obj_id = ObjectId(persona_id)
-    persona = coleccion_personas.find_one({"_id": persona_obj_id})
+    persona = coleccion_personas.find_one({"id": persona_id})
     if not persona:
         raise HTTPException(status_code=404, detail="Persona no encontrada")
-    
-    # Crear una instancia del modelo PersonaMongoDB para devolver como respuesta
-    persona_model = PersonaRepositorio(**persona)
-    return persona_model
+    return PersonaRepositorio(**persona)
 
 @app.get("/personas/{persona_id}", tags=["personas"])
 @version(2, 0)
