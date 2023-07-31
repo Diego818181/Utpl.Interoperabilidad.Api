@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.responses import Response
+from bson import ObjectId
 from pydantic import BaseModel
 from typing import List, Optional
 import uuid
@@ -347,18 +348,19 @@ def get_personas_v3(credentials: HTTPBasicCredentials = Depends(verify_credentia
 @app.get("/personas/{persona_id}", tags=["personas"])
 @version(1, 0)
 async def obtener_persona(persona_id: str):
-    # Aquí implementarías la lógica para obtener la persona por su ID
-    # Por ejemplo, consultando la base de datos o un servicio externo
-    # En este caso, asumimos que ya tienes la lógica implementada.
-    persona = coleccion_personas.find_one({"id": persona_id})
+    # Convertir el ID de cadena a ObjectId
+    persona_obj_id = ObjectId(persona_id)
+    persona = coleccion_personas.find_one({"_id": persona_obj_id})
     if not persona:
         raise HTTPException(status_code=404, detail="Persona no encontrada")
-    return persona
+    
+    # Crear una instancia del modelo PersonaMongoDB para devolver como respuesta
+    persona_model = PersonaRepositorio(**persona)
+    return persona_model
 
 @app.get("/personas/{persona_id}", tags=["personas"])
 @version(2, 0)
 async def obtener_personav2(persona_id: str):
-    # Aquí implementarías la lógica para obtener la persona por su ID en la versión 2
     persona = coleccion_personas.find_one({"id": persona_id})
     if not persona:
         raise HTTPException(status_code=404, detail="Persona no encontrada")
@@ -367,7 +369,6 @@ async def obtener_personav2(persona_id: str):
 @app.get("/personas/{persona_id}", tags=["personas"])
 @version(3, 0)
 async def obtener_personav3(persona_id: str):
-    # Aquí implementarías la lógica para obtener la persona por su ID en la versión 3
     persona = coleccion_personas.find_one({"id": persona_id})
     if not persona:
         raise HTTPException(status_code=404, detail="Persona no encontrada")
