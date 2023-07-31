@@ -81,7 +81,7 @@ def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
     return credentials
 
 # Configuración de MongoDB
-cliente = pymongo.MongoClient("mongodb+srv://utplinteroperabilidad:0b1Fd3PFZZInSuZK@cluster0.susnphb.mongodb.net/?retryWrites=true&w=majority")
+cliente = pymongo.MongoClient("mongodb+srv://sarmientodf:4esvLAlIHudf2t9u@cluster0.3vpdydi.mongodb.net/")
 database = cliente["directorio"]
 coleccion_empresas = database["empresa"]
 coleccion_personas = database["persona"]
