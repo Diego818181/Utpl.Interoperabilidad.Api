@@ -359,7 +359,7 @@ async def obtener_personav2(persona_id: str):
     persona = coleccion_personas.find_one({"id": persona_id})
     if not persona:
         raise HTTPException(status_code=404, detail="Persona no encontrada")
-    return persona
+    return PersonaRepositorio(**persona)
 
 @app.get("/personas/{persona_id}", tags=["personas"])
 @version(3, 0)
@@ -367,7 +367,7 @@ async def obtener_personav3(persona_id: str):
     persona = coleccion_personas.find_one({"id": persona_id})
     if not persona:
         raise HTTPException(status_code=404, detail="Persona no encontrada")
-    return persona
+    return PersonaRepositorio(**persona)
 
 @app.delete("/personas/{persona_id}", response_model=PersonaRepositorio, tags=["personas"])
 @version(1, 0)
@@ -376,7 +376,7 @@ async def eliminar_persona(persona_id: str):
     if not persona:
         raise HTTPException(status_code=404, detail="Persona no encontrada")
     coleccion_personas.delete_one({"id": persona_id})
-    return persona
+    return PersonaRepositorio(**persona)
 
 @app.delete("/personas/{persona_id}", response_model=PersonaRepositorio, tags=["personas"])
 @version(2, 0)
@@ -385,7 +385,7 @@ async def eliminar_persona_v2(persona_id: str):
     if not persona:
         raise HTTPException(status_code=404, detail="Persona no encontrada")
     coleccion_personas.delete_one({"id": persona_id})
-    return persona
+    return PersonaRepositorio(**persona)
 
 @app.delete("/personas/{persona_id}", response_model=PersonaRepositorio, tags=["personas"])
 @version(3, 0)
@@ -394,7 +394,7 @@ async def eliminar_persona_v3(persona_id: str):
     if not persona:
         raise HTTPException(status_code=404, detail="Persona no encontrada")
     coleccion_personas.delete_one({"id": persona_id})
-    return persona
+    return PersonaRepositorio(**persona)
 
 @app.get("/")
 def read_root():
